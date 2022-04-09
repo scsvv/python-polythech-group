@@ -6,9 +6,6 @@
     self - ссылка на объкет, который делает вызов.
     super() - ссылка на класс родителя
 '''
-from curses.ascii import DC1
-
-
 class OwnMath:
     def __init__(self):
         self.pi = 3.14
@@ -40,13 +37,10 @@ class OwnCyrcle(OwnGeometry):
         super().__init__()
     
     def diametr(self):
-        return 2*self.radius
+        return self.multy(2, self.radius)
     
     def cyrcle_squad(self):
-        return self.pi * self.radius * self.radius
-
-
-
+        return self.multi(self.pi, self.radius * self.radius)
 
 class OwnQuadrangular(OwnGeometry):
 
@@ -67,7 +61,6 @@ class OwnQuadrangular(OwnGeometry):
     def square(self):
         pass
     
-
 class OwnRightQuadrangular(OwnQuadrangular):
     def __init__(self, A, B):
         super().__init__(A, B, A, B, 90, 90, 90, 90)
