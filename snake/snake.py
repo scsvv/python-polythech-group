@@ -39,9 +39,22 @@ def pickup():
         apple_rect.y = randint(40, 680)
         GAME_POINT += 10
         snake.append(snake[1].copy())
+
+def restart(obj):
+    global snake, head_rect, body_rect, GAME_POINT, KEYS, isPlay, DIRECTION
     
+    if (KEYS[K_SPACE]) and not(isPlay):
+        DIRECTION = [0, -SPEED]
+        obj.left = 500
+        obj.top = 500
+        snake = [head_rect, body_rect]
+        GAME_POINT = 0
+        isPlay = True
+
 def game_over():
     global snake, head_rect
+    if snake[0].left < 0 or snake[0].right > 1080 or snake[0].bottom > 720 or snake[0].top < 0: 
+        return True
     for el in snake[1:]:
         if head_rect.colliderect(el):
             return True
@@ -58,15 +71,6 @@ def move(obj):
         DIRECTION = [SPEED, 0]
     elif (KEYS[K_LEFT] or KEYS[K_a]) and DIRECTION[0] == 0:
         DIRECTION = [-SPEED, 0]
-
-    if obj.bottom > 720:
-        obj.top = 0
-    elif obj.top < 0:
-        obj.bottom = 720
-    elif obj.left < 0:
-        obj.right = 1080
-    elif obj.right > 1080:
-        obj.left = 0
     
     for i in range( len(snake) - 1, 0, -1):
         snake[i].x = snake[i-1].x
@@ -92,8 +96,9 @@ while True:
             pygame.quit()
             exit()
 
+    KEYS = pygame.key.get_pressed()
+
     if isPlay: 
-        KEYS = pygame.key.get_pressed()
         screen.blit(head_image, head_rect)
         screen.blit(apple_image, apple_rect)
 
@@ -108,6 +113,7 @@ while True:
         text_rect = text.get_rect(center=(540, 360))
         screen.blit(text, text_rect)
         isPlay = False
+        restart(head_rect)
 
     pygame.display.update()
     clock.tick(15)
