@@ -1,5 +1,3 @@
-from distutils import text_file
-from email.mime import image
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -13,7 +11,7 @@ screen = pygame.display.set_mode((1080, 720))
 clock = pygame.time.Clock()
 
 
-SPEED = 10
+SPEED = 30
 DIRECTION = [SPEED, 0]
 COLOR = (255, 255, 255)
 GAME_POINT = 0
@@ -41,24 +39,24 @@ def pickup():
         apple_rect.y = randint(40, 680)
         GAME_POINT += 10
         snake.append(snake[1].copy())
-        
-
-def rand_color():
-    r = randint(0, 255)
-    g = randint(0, 255)
-    b = randint(0, 255)
-    return (r, g, b)
+    
+def game_over():
+    global snake, head_rect
+    for el in snake[1:]:
+        if head_rect.colliderect(el):
+            return True
+    return False
 
 def move(obj):
     global DIRECTION, SPEED, COLOR, KEYS
 
-    if KEYS[K_UP] or KEYS[K_w]:
+    if (KEYS[K_UP] or KEYS[K_w]) and DIRECTION[1] == 0:
         DIRECTION = [0, -SPEED]
-    elif KEYS[K_DOWN] or KEYS[K_s]:
+    elif (KEYS[K_DOWN] or KEYS[K_s]) and DIRECTION[1] == 0:
         DIRECTION = [0, SPEED]
-    elif KEYS[K_RIGHT] or KEYS[K_d]:
+    elif (KEYS[K_RIGHT] or KEYS[K_d]) and DIRECTION[0] == 0:
         DIRECTION = [SPEED, 0]
-    elif KEYS[K_LEFT] or KEYS[K_a]:
+    elif (KEYS[K_LEFT] or KEYS[K_a]) and DIRECTION[0] == 0:
         DIRECTION = [-SPEED, 0]
 
     if obj.bottom > 720:
@@ -84,6 +82,8 @@ body_image, body_rect = load_img('./img/body.png', 370, 300)
 
 snake = [head_rect, body_rect]
 
+isPlay = True
+
 while True:
     screen.fill( (0, 0, 0) )
     
@@ -92,15 +92,22 @@ while True:
             pygame.quit()
             exit()
 
-    KEYS = pygame.key.get_pressed()
-    screen.blit(head_image, head_rect)
-    screen.blit(apple_image, apple_rect)
+    if isPlay: 
+        KEYS = pygame.key.get_pressed()
+        screen.blit(head_image, head_rect)
+        screen.blit(apple_image, apple_rect)
 
-    for el in snake[1:]:
-        screen.blit(body_image, el)
+        for el in snake[1:]:
+            screen.blit(body_image, el)
+        move(head_rect)
+        pickup()
+        score()
 
-    move(head_rect)
-    pickup()
-    score()
+    if game_over():
+        text = font.render(f'Game over', True, COLOR)
+        text_rect = text.get_rect(center=(540, 360))
+        screen.blit(text, text_rect)
+        isPlay = False
+
     pygame.display.update()
-    clock.tick(30)
+    clock.tick(15)
